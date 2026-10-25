@@ -1,0 +1,278 @@
+{
+  "entities": {
+    "achiever": {
+      "title": "Diaspora Achiever",
+      "description": "Prominent diaspora achiever featured on the platform",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Full name of the achiever"
+        },
+        "role": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Title, profession or role"
+        },
+        "country": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Country of residence"
+        },
+        "achievement": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Summary of primary achievement"
+        },
+        "story": {
+          "type": "string",
+          "maxLength": 3000,
+          "description": "Detailed background story and contribution"
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Image URL of the achiever"
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether to feature on the homepage slider"
+        },
+        "order": {
+          "type": "number",
+          "description": "Display order"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        }
+      },
+      "required": ["name", "role", "country", "achievement", "imageUrl"]
+    },
+    "news": {
+      "title": "Diaspora News",
+      "description": "News items and updates concerning the global diaspora",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 250,
+          "description": "Headline of the news article"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Short excerpt or brief overview"
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 8000,
+          "description": "Full news article text"
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Category such as Politics, Culture, Business, Tech"
+        },
+        "country": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Country or region"
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Cover image URL"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Source or publication name"
+        },
+        "publishedAt": {
+          "type": "string",
+          "description": "Publication date"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        }
+      },
+      "required": ["title", "summary", "category", "imageUrl"]
+    },
+    "project": {
+      "title": "Project Showcase",
+      "description": "Showcase of diaspora ventures, community projects, and innovations",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Project title"
+        },
+        "tagline": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Brief tagline"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 4000,
+          "description": "Full description of the project"
+        },
+        "founder": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Founder or initiator name"
+        },
+        "country": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Location or country"
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Project domain/industry"
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Project showcase image"
+        },
+        "projectUrl": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Website or repo link"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        }
+      },
+      "required": ["title", "tagline", "founder", "category", "imageUrl"]
+    },
+    "post": {
+      "title": "Blog Post",
+      "description": "Articles, opinions, and essays written by or for the diaspora",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 250,
+          "description": "Blog post title"
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Short excerpt"
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 10000,
+          "description": "Full blog article content"
+        },
+        "author": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Author name"
+        },
+        "authorBio": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Short author bio"
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Category or topic"
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Feature image URL"
+        },
+        "readTime": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Estimated reading time"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        }
+      },
+      "required": ["title", "excerpt", "author", "imageUrl"]
+    },
+    "event": {
+      "title": "Diaspora Event",
+      "description": "Community summits, cultural festivals, networking conferences",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Event name"
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Event date or date range"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Venue or city/online"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 3000,
+          "description": "Event details"
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Banner image"
+        },
+        "registrationLink": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "RSVP or tickets URL"
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Event category such as Summit, Technology, Business & Investment"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        }
+      },
+      "required": ["title", "date", "location", "imageUrl"]
+    }
+  },
+  "firestore": {
+    "/achievers/{achieverId}": {
+      "schema": "achiever",
+      "description": "Diaspora achievers featured in dynamic carousel"
+    },
+    "/news/{newsId}": {
+      "schema": "news",
+      "description": "Diaspora news articles and updates"
+    },
+    "/projects/{projectId}": {
+      "schema": "project",
+      "description": "Project showcases created via admin panel"
+    },
+    "/posts/{postId}": {
+      "schema": "post",
+      "description": "Blog posts and articles published dynamically"
+    },
+    "/events/{eventId}": {
+      "schema": "event",
+      "description": "Diaspora community and cultural events"
+    }
+  }
+}

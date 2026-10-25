@@ -1,0 +1,8 @@
+{
+  "name": "Diaspora Connect - Global NRI & PIO Portal",
+  "description": "Global Indian Diaspora portal featuring diaspora achievers carousel, news updates, project showcases, blog posts, and dynamic admin panel with Firestore integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
