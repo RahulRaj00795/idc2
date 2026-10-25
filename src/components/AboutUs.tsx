@@ -40,10 +40,6 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onSelectTab }) => {
             </div>
 
             <div className="max-w-4xl">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-700 mb-3">
-                Institutional Charter &amp; Global Mandate
-              </p>
-
               <h1 className="font-editorial text-3xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-stone-950 leading-[1.08]">
                 INDIAN DIASPORA CLUB <span className="text-orange-600">(IDC)</span>
               </h1>

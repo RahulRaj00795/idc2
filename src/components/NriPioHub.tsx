@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Landmark, Shield, HelpCircle, Compass, CheckCircle2, ExternalLink } from 'lucide-react';
+import { FileText, Landmark, Shield, HelpCircle, CheckCircle2, ExternalLink } from 'lucide-react';
 
 export const NriPioHub: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'oci' | 'banking' | 'property' | 'faq'>('oci');
@@ -8,12 +8,11 @@ export const NriPioHub: React.FC = () => {
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Title */}
       <div className="mb-10 text-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-          <Compass className="w-3.5 h-3.5 text-amber-600" />
-          <span>Official Resource Center</span>
-        </div>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-700 mb-2">
+          Official Resource Center
+        </p>
         <h1 className="text-4xl font-black text-gray-900 tracking-tight">
-          NRI &amp; PIO <span className="text-orange-600">Guidance Hub</span>
+          NRI &amp; PIO <span className="text-orange-600">Guidance</span>
         </h1>
         <p className="mt-3 text-base text-gray-600">
           Essential legal, financial, property, and consular information for Non-Resident Indians (NRIs) and Overseas Citizens of India (OCIs / PIOs).

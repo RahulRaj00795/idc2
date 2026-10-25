@@ -93,9 +93,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   CLUB
                 </span>
               </div>
-              <p className="text-[11px] font-semibold text-gray-500 tracking-wider uppercase">
-                Global NRI &amp; PIO Federation
-              </p>
             </div>
           </div>
 
@@ -138,15 +135,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <span>NRI / PIO</span>
-              <span
-                className={`px-1.5 py-0.5 text-[10px] rounded-sm font-bold ${
-                  currentTab === 'nri-pio'
-                    ? 'bg-white/20 text-white'
-                    : 'bg-amber-100 text-amber-800'
-                }`}
-              >
-                Hub
-              </span>
             </button>
 
             {/* Events */}
@@ -301,7 +289,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               currentTab === 'nri-pio' ? 'bg-orange-600 text-white' : 'text-gray-700 hover:bg-gray-50'
             }`}
           >
-            NRI / PIO HUB
+            NRI / PIO
           </button>
 
           <button

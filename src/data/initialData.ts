@@ -223,7 +223,7 @@ export const INITIAL_EVENTS: DiasporaEvent[] = [
     title: 'India-Diaspora Investment & Leadership Delegation',
     date: 'January 9-11, 2027',
     location: 'Mumbai & GIFT City, Gujarat',
-    description: 'Curated institutional delegation connecting overseas investors, industrialists, and policymakers with high-growth Indian infrastructure and innovation hubs.',
+    description: 'Curated institutional delegation connecting overseas investors, industrialists, and policymakers with high-growth Indian infrastructure and innovation centres.',
     imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
     registrationLink: 'https://example.com/register-delegation',
     category: 'Business & Investment'

@@ -101,7 +101,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
               </li>
               <li>
                 <button onClick={() => onSelectTab('nri-pio')} className="hover:text-orange-400 transition cursor-pointer">
-                  NRI / PIO Legal &amp; Banking Hub
+                  NRI / PIO Legal &amp; Banking
                 </button>
               </li>
               <li>

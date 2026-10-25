@@ -15,19 +15,7 @@ export const HomeIdcIntro: React.FC<HomeIdcIntroProps> = ({ onSelectTab }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
         {/* Flagship Institutional Masthead */}
         <div className="pb-10 sm:pb-12 border-b border-stone-300/80 flex flex-col md:flex-row md:items-center gap-6 sm:gap-8">
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white border border-stone-200/90 shadow-xs overflow-hidden shrink-0 flex items-center justify-center">
-            <img
-              src="/assets/aistudio/WhatsApp_Image_2026-10-25_at_11.16.58_AM_66a822ca.jpeg"
-              alt="Indian Diaspora Club (IDC) Official Emblem"
-              className="w-full h-full object-contain scale-[1.28]"
-            />
-          </div>
-
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-700 mb-2.5">
-              Global NRI &amp; PIO Institutional Platform
-            </p>
-
             <h1 className="font-editorial text-3xl sm:text-5xl lg:text-[3.35rem] font-bold tracking-tight text-stone-950 leading-[1.1]">
               INDIAN DIASPORA CLUB <span className="text-orange-600">(IDC)</span>
             </h1>
@@ -161,7 +149,7 @@ export const HomeIdcIntro: React.FC<HomeIdcIntroProps> = ({ onSelectTab }) => {
                 onClick={() => onSelectTab('nri-pio')}
                 className="inline-flex items-center justify-center px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-sm font-semibold rounded-lg border border-stone-200 transition-colors cursor-pointer"
               >
-                NRI / PIO Hub
+                NRI / PIO
               </button>
             </div>
           </div>
