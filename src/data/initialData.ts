@@ -12,7 +12,7 @@ export const INITIAL_ACHIEVERS: Achiever[] = [
     featured: true,
     order: 1,
     tags: ['Technology', 'Leadership', 'AI'],
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-12T09:00:00.000Z'
   },
   {
     id: 'achiever-2',
@@ -25,7 +25,7 @@ export const INITIAL_ACHIEVERS: Achiever[] = [
     featured: true,
     order: 2,
     tags: ['Aerospace', 'STEM', 'Exploration'],
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-11T09:00:00.000Z'
   },
   {
     id: 'achiever-3',
@@ -38,7 +38,7 @@ export const INITIAL_ACHIEVERS: Achiever[] = [
     featured: true,
     order: 3,
     tags: ['Economics', 'Policy', 'Global Finance'],
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-10T09:00:00.000Z'
   },
   {
     id: 'achiever-4',
@@ -51,7 +51,7 @@ export const INITIAL_ACHIEVERS: Achiever[] = [
     featured: true,
     order: 4,
     tags: ['Banking', 'Sustainability', 'Global Impact'],
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-09T09:00:00.000Z'
   },
   {
     id: 'achiever-5',
@@ -64,7 +64,7 @@ export const INITIAL_ACHIEVERS: Achiever[] = [
     featured: true,
     order: 5,
     tags: ['Technology', 'Cloud', 'AI'],
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-08T09:00:00.000Z'
   }
 ];
 
@@ -80,7 +80,7 @@ export const INITIAL_NEWS: NewsItem[] = [
     source: 'World Financial Review',
     publishedAt: 'October 12, 2026',
     readTime: '3 min read',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-12T10:00:00.000Z'
   },
   {
     id: 'news-2',
@@ -93,7 +93,7 @@ export const INITIAL_NEWS: NewsItem[] = [
     source: 'Diaspora Affairs Bureau',
     publishedAt: 'October 10, 2026',
     readTime: '4 min read',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-10T10:00:00.000Z'
   },
   {
     id: 'news-3',
@@ -106,7 +106,7 @@ export const INITIAL_NEWS: NewsItem[] = [
     source: 'TechInnovate Global',
     publishedAt: 'October 8, 2026',
     readTime: '5 min read',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-08T10:00:00.000Z'
   },
   {
     id: 'news-4',
@@ -119,7 +119,7 @@ export const INITIAL_NEWS: NewsItem[] = [
     source: 'Global Heritage Network',
     publishedAt: 'October 5, 2026',
     readTime: '3 min read',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-05T10:00:00.000Z'
   }
 ];
 
@@ -136,7 +136,7 @@ export const INITIAL_PROJECTS: ProjectShowcase[] = [
     projectUrl: 'https://example.com/desihealth',
     tags: ['HealthTech', 'Telemedicine', 'Community Impact'],
     status: 'Live',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-12T08:00:00.000Z'
   },
   {
     id: 'proj-2',
@@ -150,7 +150,7 @@ export const INITIAL_PROJECTS: ProjectShowcase[] = [
     projectUrl: 'https://example.com/pravasi-archive',
     tags: ['History', 'Oral Archive', 'Digital Humanities'],
     status: 'Live',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-11T08:00:00.000Z'
   },
   {
     id: 'proj-3',
@@ -164,7 +164,7 @@ export const INITIAL_PROJECTS: ProjectShowcase[] = [
     projectUrl: 'https://example.com/kisankranti',
     tags: ['AgriTech', 'Solar', 'Sustainability'],
     status: 'Live',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-10T08:00:00.000Z'
   }
 ];
 
@@ -180,7 +180,7 @@ export const INITIAL_POSTS: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80',
     readTime: '6 min read',
     publishedAt: 'October 11, 2026',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-11T10:00:00.000Z'
   },
   {
     id: 'post-2',
@@ -193,7 +193,7 @@ export const INITIAL_POSTS: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80',
     readTime: '4 min read',
     publishedAt: 'October 9, 2026',
-    createdAt: new Date().toISOString()
+    createdAt: '2026-10-09T10:00:00.000Z'
   }
 ];
 
@@ -205,8 +205,8 @@ export const INITIAL_EVENTS: DiasporaEvent[] = [
     location: 'Hybrid / New Delhi & Online Livestream',
     description: 'Join over 2,000 delegates from 60 countries discussing bilateral trade corridors, startup investments, and cultural diplomacy.',
     imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
-    registrationLink: 'https://example.com/register-conclave',
-    category: 'Summit'
+    category: 'Summit',
+    createdAt: '2026-10-12T07:00:00.000Z'
   },
   {
     id: 'event-2',
@@ -215,8 +215,8 @@ export const INITIAL_EVENTS: DiasporaEvent[] = [
     location: 'Virtual / Global',
     description: '48-hour global sprint building solutions for disaster relief, multilingual language models, and health monitoring.',
     imageUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=800&q=80',
-    registrationLink: 'https://example.com/register-hackathon',
-    category: 'Technology'
+    category: 'Technology',
+    createdAt: '2026-10-11T07:00:00.000Z'
   },
   {
     id: 'event-3',
@@ -225,8 +225,8 @@ export const INITIAL_EVENTS: DiasporaEvent[] = [
     location: 'Mumbai & GIFT City, Gujarat',
     description: 'Curated institutional delegation connecting overseas investors, industrialists, and policymakers with high-growth Indian infrastructure and innovation centres.',
     imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
-    registrationLink: 'https://example.com/register-delegation',
-    category: 'Business & Investment'
+    category: 'Business & Investment',
+    createdAt: '2026-10-10T07:00:00.000Z'
   }
 ];
 

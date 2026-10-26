@@ -43,6 +43,13 @@ const LANGUAGE_OPTIONS: { value: LanguageFilter; label: string }[] = [
 const FALLBACK_EVENT_IMAGE =
   'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80';
 
+function parsePubDateMs(raw?: string): number {
+  if (!raw) return 0;
+  const normalized = raw.includes('T') ? raw : `${raw.replace(' ', 'T')}Z`;
+  const parsed = Date.parse(normalized);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 function formatPubDate(raw: string): string {
   if (!raw) return 'Just now';
   const normalized = raw.includes('T') ? raw : `${raw.replace(' ', 'T')}Z`;
@@ -109,7 +116,9 @@ export const EventsSection: React.FC<EventsSectionProps> = ({
           throw new Error(data.message || 'Unable to load live India updates right now.');
         }
 
-        const incoming = Array.isArray(data.results) ? data.results : [];
+        const incoming = (Array.isArray(data.results) ? data.results : []).sort(
+          (a, b) => parsePubDateMs(b.pubDate) - parsePubDateMs(a.pubDate)
+        );
 
         if (isLoadMore) {
           setArticles((prev) => {
@@ -522,22 +531,9 @@ export const EventsSection: React.FC<EventsSectionProps> = ({
                       <span>Public Diaspora Gathering</span>
                     </span>
 
-                    {event.registrationLink ? (
-                      <a
-                        href={event.registrationLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-orange-50 text-orange-700 hover:bg-orange-600 hover:text-white rounded-lg text-xs font-bold transition-all"
-                      >
-                        <span>RSVP / Register</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    ) : (
-                      <span className="text-xs font-bold text-orange-600">
-                        Open Attendance
-                      </span>
-                    )}
+                    <span className="text-xs font-bold text-orange-600 group-hover:underline">
+                      View Event Details
+                    </span>
                   </div>
                 </div>
               </div>

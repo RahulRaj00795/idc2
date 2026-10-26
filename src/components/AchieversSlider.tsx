@@ -18,6 +18,11 @@ export const AchieversSlider: React.FC<AchieversSliderProps> = ({
   const timerRef = useRef<any>(null);
 
   const total = achievers.length;
+  const newestId = achievers[0]?.id;
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [newestId]);
 
   // Keep changing automatically as explicitly written on sketch: "Keep changing. It should keep on changing"
   useEffect(() => {
@@ -57,7 +62,8 @@ export const AchieversSlider: React.FC<AchieversSliderProps> = ({
     );
   }
 
-  const current = achievers[currentIndex];
+  const safeIndex = currentIndex < total ? currentIndex : 0;
+  const current = achievers[safeIndex];
 
   return (
     <section className="bg-gradient-to-b from-orange-50/50 via-white to-white py-10 px-4 sm:px-6 lg:px-8 border-b border-orange-100/80">

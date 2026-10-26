@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NewsItem } from '../types';
 import { ChevronLeft, ChevronRight, Newspaper, Calendar, Clock, ArrowRight, Plus } from 'lucide-react';
 
@@ -18,6 +18,18 @@ export const NewsSlider: React.FC<NewsSliderProps> = ({
   // We can show 3 news cards at a time on desktop, 2 on tablet, 1 on mobile
   const itemsPerPage = 3;
   const total = news.length;
+  const newestId = news[0]?.id;
+
+  // Always show the newest (first) item when a new post arrives or bounds shrink
+  useEffect(() => {
+    setStartIndex(0);
+  }, [newestId]);
+
+  useEffect(() => {
+    if (startIndex >= total && total > 0) {
+      setStartIndex(Math.max(0, total - itemsPerPage));
+    }
+  }, [startIndex, total]);
 
   const handlePrev = () => {
     setStartIndex((prev) => Math.max(0, prev - 1));

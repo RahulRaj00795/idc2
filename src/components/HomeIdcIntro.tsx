@@ -8,7 +8,7 @@ interface HomeIdcIntroProps {
 
 export const HomeIdcIntro: React.FC<HomeIdcIntroProps> = ({ onSelectTab }) => {
   return (
-    <section className="bg-[#FBF9F5] border-b border-stone-200/90 text-stone-900">
+    <section className="font-sans bg-[#FBF9F5] border-b border-stone-200/90 text-gray-900">
       {/* Subtle Top Institutional Hairline */}
       <div className="h-1 w-full bg-gradient-to-r from-orange-600 via-amber-500 to-emerald-700" />
 
@@ -16,36 +16,36 @@ export const HomeIdcIntro: React.FC<HomeIdcIntroProps> = ({ onSelectTab }) => {
         {/* Flagship Institutional Masthead */}
         <div className="pb-10 sm:pb-12 border-b border-stone-300/80 flex flex-col md:flex-row md:items-center gap-6 sm:gap-8">
           <div>
-            <h1 className="font-editorial text-3xl sm:text-5xl lg:text-[3.35rem] font-bold tracking-tight text-stone-950 leading-[1.1]">
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900 leading-[1.12]">
               INDIAN DIASPORA CLUB <span className="text-orange-600">(IDC)</span>
             </h1>
 
             {/* Three Pillars Subtitle */}
-            <p className="mt-4 text-sm sm:text-base lg:text-lg font-semibold text-stone-800 tracking-wide">
+            <p className="mt-4 text-sm sm:text-base lg:text-lg font-semibold text-gray-800 tracking-wide">
               Connecting Global Indians <span className="text-orange-500 mx-1.5">|</span> Celebrating Excellence <span className="text-orange-500 mx-1.5">|</span> Building Meaningful Partnerships
             </p>
 
             {/* Shared Vision Tagline */}
-            <p className="font-editorial mt-2 text-lg sm:text-xl lg:text-2xl italic text-stone-700">
+            <p className="mt-2 text-base sm:text-lg lg:text-xl font-medium text-gray-600">
               One Heritage. One Global Community. One Shared Vision.
             </p>
           </div>
         </div>
 
-        {/* Asymmetric Two-Column Editorial Narrative & Engagement Directory */}
+        {/* Asymmetric Two-Column Narrative & Engagement Directory */}
         <div className="pt-10 sm:pt-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left Column: About Indian Diaspora Club (Full Verbatim Prose) */}
           <div className="lg:col-span-7">
             <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
-              <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-stone-950 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
                 About Indian Diaspora Club
               </h2>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400 hidden sm:inline">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400 hidden sm:inline">
                 Charter &amp; Mandate
               </span>
             </div>
 
-            <div className="space-y-5 text-stone-700 text-base sm:text-[17px] leading-[1.8] max-w-prose">
+            <div className="space-y-5 text-gray-700 text-base leading-[1.8] max-w-prose">
               <p>
                 Indian Diaspora Club (IDC) is a global platform dedicated to connecting, engaging, and honouring People of Indian Origin (PIOs) and Non-Resident Indians (NRIs) who have made significant contributions to their professions, communities, and societies across the world.
               </p>
@@ -54,9 +54,9 @@ export const HomeIdcIntro: React.FC<HomeIdcIntroProps> = ({ onSelectTab }) => {
                 Founded on the belief that the Indian diaspora represents one of India&apos;s greatest global strengths, IDC works to build meaningful connections between India and its people living abroad. The organisation brings together distinguished leaders, entrepreneurs, policymakers, diplomats, philanthropists, academicians, scientists, professionals, and changemakers who share a common heritage and a commitment to making a positive difference.
               </p>
 
-              {/* Editorial Pull-Highlight with Top & Bottom Hairlines */}
+              {/* Mission Highlight with Top & Bottom Hairlines */}
               <div className="my-7 py-5 border-y border-orange-300/70 bg-orange-50/40 px-5 sm:px-6">
-                <p className="font-editorial text-lg sm:text-xl font-semibold text-stone-900 leading-relaxed">
+                <p className="text-base sm:text-lg font-semibold text-gray-900 leading-relaxed">
                   At the heart of IDC&apos;s mission is a simple yet powerful objective: to connect the right people with the right opportunities for the right purpose, both in India and internationally.
                 </p>
               </div>
@@ -73,7 +73,7 @@ export const HomeIdcIntro: React.FC<HomeIdcIntroProps> = ({ onSelectTab }) => {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-700">
                 Strategic Pillars of Engagement
               </p>
-              <h3 className="text-lg sm:text-xl font-bold text-stone-900 mt-1">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mt-1">
                 Bridging Global Indians &amp; India
               </h3>
             </div>

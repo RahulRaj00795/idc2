@@ -200,20 +200,6 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, onClose 
                   {item.data.description}
                 </p>
               </div>
-
-              {item.data.registrationLink && (
-                <div className="pt-2">
-                  <a
-                    href={item.data.registrationLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center space-x-2 px-5 py-2.5 bg-orange-600 text-white rounded-xl text-xs font-bold hover:bg-orange-700 transition"
-                  >
-                    <span>RSVP / Register for Event</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              )}
             </>
           )}
 

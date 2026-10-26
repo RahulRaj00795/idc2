@@ -88,7 +88,7 @@ export const PublishContact: React.FC = () => {
           </h3>
           <p className="text-sm text-emerald-700 mt-2 max-w-md mx-auto">
             {mode === 'publish'
-              ? 'Your submission has been queued and published to our community articles feed.'
+              ? 'Your article submission has been received and stored in our editorial database.'
               : 'Thank you for reaching out. Our editorial secretariat will respond to your email shortly.'}
           </p>
           <button

@@ -126,7 +126,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [eventCategory, setEventCategory] = useState('Summit');
   const [eventDescription, setEventDescription] = useState('');
   const [eventImageUrl, setEventImageUrl] = useState(IMAGE_PRESETS[6].url);
-  const [eventRegLink, setEventRegLink] = useState('');
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
   const showNotification = (msg: string) => {
@@ -152,6 +151,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // --- Achiever Submit ---
   const handleSaveAchiever = async (e: React.FormEvent) => {
     e.preventDefault();
+    const existing = editingAchieverId
+      ? achievers.find((a) => a.id === editingAchieverId)
+      : undefined;
     const item: Achiever = {
       id: editingAchieverId || `achiever-${Date.now()}`,
       name: achieverName,
@@ -162,12 +164,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       imageUrl: achieverImageUrl,
       tags: achieverTags.split(',').map((t) => t.trim()).filter(Boolean),
       featured: true,
-      order: 1,
-      createdAt: new Date().toISOString()
+      order: existing?.order ?? 0,
+      createdAt: existing?.createdAt || new Date().toISOString()
     };
     await contentService.saveAchiever(item);
     showNotification(editingAchieverId ? 'Achiever updated!' : 'New achiever published!');
-    // Reset
     setAchieverName('');
     setAchieverRole('');
     setAchieverAchievement('');
@@ -178,6 +179,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // --- News Submit ---
   const handleSaveNews = async (e: React.FormEvent) => {
     e.preventDefault();
+    const existing = editingNewsId ? news.find((n) => n.id === editingNewsId) : undefined;
     const item: NewsItem = {
       id: editingNewsId || `news-${Date.now()}`,
       title: newsTitle,
@@ -187,9 +189,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       country: newsCountry,
       imageUrl: newsImageUrl,
       source: newsSource,
-      publishedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      readTime: '3 min read',
-      createdAt: new Date().toISOString()
+      publishedAt:
+        existing?.publishedAt ||
+        new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      readTime: existing?.readTime || '3 min read',
+      createdAt: existing?.createdAt || new Date().toISOString()
     };
     await contentService.saveNews(item);
     showNotification(editingNewsId ? 'News updated!' : 'News article published!');
@@ -228,6 +232,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // --- Post Submit ---
   const handleSavePost = async (e: React.FormEvent) => {
     e.preventDefault();
+    const existing = editingPostId ? posts.find((p) => p.id === editingPostId) : undefined;
     const item: BlogPost = {
       id: editingPostId || `post-${Date.now()}`,
       title: postTitle,
@@ -238,8 +243,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       category: postCategory,
       imageUrl: postImageUrl,
       readTime: postReadTime,
-      publishedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      createdAt: new Date().toISOString()
+      publishedAt:
+        existing?.publishedAt ||
+        new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      createdAt: existing?.createdAt || new Date().toISOString()
     };
     await contentService.savePost(item);
     showNotification(editingPostId ? 'Blog post updated!' : 'Blog post published dynamically!');
@@ -253,6 +260,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // --- Upcoming Event Submit ---
   const handleSaveEvent = async (e: React.FormEvent) => {
     e.preventDefault();
+    const existing = editingEventId ? events.find((ev) => ev.id === editingEventId) : undefined;
     const item: DiasporaEvent = {
       id: editingEventId || `event-${Date.now()}`,
       title: eventTitle,
@@ -261,8 +269,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       category: eventCategory || 'Summit',
       description: eventDescription,
       imageUrl: eventImageUrl,
-      registrationLink: eventRegLink.trim(),
-      createdAt: new Date().toISOString()
+      createdAt: existing?.createdAt || new Date().toISOString()
     };
     await contentService.saveEvent(item);
     showNotification(editingEventId ? 'Upcoming event updated!' : 'Upcoming event published!');
@@ -271,7 +278,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setEventLocation('New Delhi / Hybrid');
     setEventCategory('Summit');
     setEventDescription('');
-    setEventRegLink('');
     setEditingEventId(null);
   };
 
@@ -451,7 +457,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <span>{editingPostId ? 'Edit Article' : 'Write New Blog Post'}</span>
               </h2>
               <p className="text-xs text-gray-500 mb-5">
-                Publish diaspora essays, commentary, and cultural narratives.
+                Add and store Diaspora Voices &amp; Insights articles in the backend database (public display is currently hidden for future release).
               </p>
 
               <form onSubmit={handleSavePost} className="space-y-4">
@@ -579,9 +585,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             {/* Existing List */}
             <div className="lg:col-span-7 space-y-4">
-              <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">
-                Published Articles ({posts.length})
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                  Stored Articles ({posts.length})
+                </h3>
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                  Stored in Backend • Hidden on Public Site
+                </span>
+              </div>
               {posts.map((p) => (
                 <div
                   key={p.id}
@@ -1125,19 +1136,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                    Registration / RSVP Link (Optional)
-                  </label>
-                  <input
-                    type="url"
-                    value={eventRegLink}
-                    onChange={(e) => setEventRegLink(e.target.value)}
-                    placeholder="https://example.com/register"
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
                     Description *
                   </label>
                   <textarea
@@ -1161,7 +1159,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         setEventLocation('New Delhi / Hybrid');
                         setEventCategory('Summit');
                         setEventDescription('');
-                        setEventRegLink('');
                       }}
                       className="px-3 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
                     >
@@ -1213,7 +1210,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         setEventCategory(ev.category || 'Summit');
                         setEventDescription(ev.description);
                         setEventImageUrl(ev.imageUrl);
-                        setEventRegLink(ev.registrationLink || '');
                       }}
                       className="p-2 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition cursor-pointer"
                       title="Edit"

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DiasporaEvent } from '../types';
-import { Calendar, MapPin, ExternalLink, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 
 interface UpcomingEventsShowcaseProps {
   events: DiasporaEvent[];
@@ -138,26 +138,10 @@ export const UpcomingEventsShowcase: React.FC<UpcomingEventsShowcaseProps> = ({
                   </div>
 
                   <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-orange-600 group-hover:underline">
-                      View Event Details
+                    <span className="inline-flex items-center space-x-1 text-xs font-bold text-orange-600 group-hover:translate-x-1 transition-transform">
+                      <span>View Event Details</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </span>
-
-                    {event.registrationLink ? (
-                      <a
-                        href={event.registrationLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center space-x-1 px-2.5 py-1 bg-orange-50 hover:bg-orange-600 text-orange-700 hover:text-white rounded-md text-xs font-bold transition-colors"
-                      >
-                        <span>RSVP / Register</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    ) : (
-                      <span className="text-[11px] font-semibold text-gray-500">
-                        Open Attendance
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>

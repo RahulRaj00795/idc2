@@ -10,7 +10,6 @@ import { HomeIdcIntro } from './components/HomeIdcIntro';
 import { AchieversSlider } from './components/AchieversSlider';
 import { NewsSlider } from './components/NewsSlider';
 import { UpcomingEventsShowcase } from './components/UpcomingEventsShowcase';
-import { BlogSection } from './components/BlogSection';
 import { AboutUs } from './components/AboutUs';
 import { NriPioHub } from './components/NriPioHub';
 import { EventsSection } from './components/EventsSection';
@@ -353,12 +352,6 @@ export default function App() {
                 setCurrentTab('events');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-            />
-
-            {/* 4. Blog Posts & Articles (Dynamic & CMS-managed) */}
-            <BlogSection
-              posts={posts}
-              onSelectPost={(post) => setActiveModalItem({ type: 'post', data: post })}
             />
           </>
         )}
