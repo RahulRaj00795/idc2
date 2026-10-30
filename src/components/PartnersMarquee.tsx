@@ -33,6 +33,11 @@ const ROW_ONE_PARTNERS: PartnerLogo[] = [
     src: '/assets/aistudio/govt_goa_f4947786.png',
   },
   {
+    id: 'jharkhand-govt',
+    name: 'Government of Jharkhand',
+    src: '/assets/aistudio/Jh_govt_61d292bc.png',
+  },
+  {
     id: 'telangana-tourism',
     name: 'Telangana Tourism',
     src: '/assets/aistudio/telangana_fffa03ff.jpeg',
@@ -95,15 +100,11 @@ export const PartnersMarquee: React.FC = () => {
     <section className="py-14 bg-white border-b border-gray-200/80 overflow-hidden font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="pb-5 border-b border-gray-200 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-700 mb-2">
-            Institutional Collaborations &amp; Global Alliances
-          </p>
+          
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
             Partners / Supporters
           </h2>
-          <p className="text-sm text-gray-600 mt-1.5 max-w-2xl mx-auto">
-            Honoured to collaborate with ministries, state governments, chambers of commerce, and global diaspora organisations.
-          </p>
+         
         </div>
       </div>
 
