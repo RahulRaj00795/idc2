@@ -9,6 +9,19 @@
   .animate-spin-slow {
     animation: spin 16s linear infinite;
   }
+
+  .animate-marquee-left {
+    animation: marquee-left 38s linear infinite;
+  }
+
+  .animate-marquee-right {
+    animation: marquee-right 38s linear infinite;
+  }
+
+  .marquee-track:hover .animate-marquee-left,
+  .marquee-track:hover .animate-marquee-right {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes spin {
@@ -17,6 +30,32 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 

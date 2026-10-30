@@ -9,6 +9,7 @@ import { Navbar } from './components/Navbar';
 import { HomeIdcIntro } from './components/HomeIdcIntro';
 import { AchieversSlider } from './components/AchieversSlider';
 import { NewsSlider } from './components/NewsSlider';
+import { PartnersMarquee } from './components/PartnersMarquee';
 import { UpcomingEventsShowcase } from './components/UpcomingEventsShowcase';
 import { AboutUs } from './components/AboutUs';
 import { NriPioHub } from './components/NriPioHub';
@@ -344,7 +345,10 @@ export default function App() {
               onSelectNews={(item) => setActiveModalItem({ type: 'news', data: item })}
             />
 
-            {/* 3. Upcoming Events (Dynamic & CMS-managed) */}
+            {/* 3. Partners / Supporters (2-Line Opposite Rotating Marquee) */}
+            <PartnersMarquee />
+
+            {/* 4. Upcoming Events (Dynamic & CMS-managed) */}
             <UpcomingEventsShowcase
               events={events}
               onSelectEvent={(ev) => setActiveModalItem({ type: 'event', data: ev })}
