@@ -12,36 +12,17 @@ export const HomeIdcIntro: React.FC<HomeIdcIntroProps> = ({ onSelectTab }) => {
       {/* Subtle Top Institutional Hairline */}
       <div className="h-1 w-full bg-gradient-to-r from-orange-600 via-amber-500 to-emerald-700" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
-        {/* Flagship Institutional Masthead */}
-        <div className="pb-10 sm:pb-12 border-b border-stone-300/80 flex flex-col md:flex-row md:items-center gap-6 sm:gap-8">
-          <div>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900 leading-[1.12]">
-              INDIAN DIASPORA CLUB <span className="text-orange-600">(IDC)</span>
-            </h1>
-
-            {/* Three Pillars Subtitle */}
-            <p className="mt-4 text-sm sm:text-base lg:text-lg font-semibold text-gray-800 tracking-wide">
-              Connecting Global Indians <span className="text-orange-500 mx-1.5">|</span> Celebrating Excellence <span className="text-orange-500 mx-1.5">|</span> Building Meaningful Partnerships
-            </p>
-
-            {/* Shared Vision Tagline */}
-            <p className="mt-2 text-base sm:text-lg lg:text-xl font-medium text-gray-600">
-              One Heritage. One Global Community. One Shared Vision.
-            </p>
-          </div>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Asymmetric Two-Column Narrative & Engagement Directory */}
-        <div className="pt-10 sm:pt-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left Column: About Indian Diaspora Club (Full Verbatim Prose) */}
           <div className="lg:col-span-7">
             <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
                 About Indian Diaspora Club
               </h2>
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400 hidden sm:inline">
-                Charter &amp; Mandate
+              
               </span>
             </div>
 

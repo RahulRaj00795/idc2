@@ -49,6 +49,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Site Configuration (e.g. Home Banner)
+    match /siteConfig/{configId} {
+      allow read, write: if true;
+    }
+
     // Admin collection
     match /admins/{adminId} {
       allow read: if true;

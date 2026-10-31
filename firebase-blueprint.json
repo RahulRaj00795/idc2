@@ -251,6 +251,22 @@
         }
       },
       "required": ["title", "date", "location", "imageUrl"]
+    },
+    "siteConfig": {
+      "title": "Site Configuration",
+      "description": "Global site configuration settings such as the homepage top banner",
+      "type": "object",
+      "properties": {
+        "imageUrl": {
+          "type": "string",
+          "description": "Homepage banner URL or encoded image data URL"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of last update"
+        }
+      },
+      "required": ["imageUrl"]
     }
   },
   "firestore": {
@@ -273,6 +289,10 @@
     "/events/{eventId}": {
       "schema": "event",
       "description": "Diaspora community and cultural events"
+    },
+    "/siteConfig/{configId}": {
+      "schema": "siteConfig",
+      "description": "Global site configuration documents including homeBanner"
     }
   }
 }

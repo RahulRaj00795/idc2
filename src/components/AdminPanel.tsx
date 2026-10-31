@@ -39,11 +39,12 @@ interface AdminPanelProps {
   projects: ProjectShowcase[];
   posts: BlogPost[];
   events: DiasporaEvent[];
+  homeBannerUrl: string;
   onClose: () => void;
   onAdminLogout: () => void;
 }
 
-type AdminSection = 'events' | 'posts' | 'achievers' | 'news' | 'security';
+type AdminSection = 'banner' | 'events' | 'posts' | 'achievers' | 'news' | 'security';
 
 // Curated high quality presets for quick image selection
 const IMAGE_PRESETS = [
@@ -62,19 +63,36 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   news,
   posts,
   events,
+  homeBannerUrl,
   onClose,
   onAdminLogout
 }) => {
-  const [activeSection, setActiveSection] = useState<AdminSection>('events');
+  const [activeSection, setActiveSection] = useState<AdminSection>('banner');
   const [seeding, setSeeding] = useState(false);
   const [seedSuccess, setSeedSuccess] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [bannerInputUrl, setBannerInputUrl] = useState<string>(homeBannerUrl || '');
+  const [savingBanner, setSavingBanner] = useState<boolean>(false);
 
   // --- Admin Credentials State ---
   const [adminUsernameInput, setAdminUsernameInput] = useState(adminAuthService.getCurrentAdminUser() || DEFAULT_ADMIN_USERNAME);
   const [adminNewPassword, setAdminNewPassword] = useState('');
   const [adminConfirmPassword, setAdminConfirmPassword] = useState('');
   const [updatingCreds, setUpdatingCreds] = useState(false);
+
+  const handleBannerFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSavingBanner(true);
+    try {
+      const savedUrl = await contentService.uploadExactBannerFile(file);
+      setBannerInputUrl(savedUrl);
+      showNotification('Exact Home Banner uploaded and live on Homepage!');
+    } finally {
+      setSavingBanner(false);
+    }
+  };
 
   // --- Achiever Form State ---
   const [achieverName, setAchieverName] = useState('');
@@ -387,6 +405,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         {/* Navigation Tabs */}
         <div className="flex space-x-2 border-b border-gray-200 pb-3 overflow-x-auto scrollbar-none">
           <button
+            onClick={() => setActiveSection('banner')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer ${
+              activeSection === 'banner'
+                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Image className="w-4 h-4" />
+            <span>Home Banner</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('events')}
             className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer ${
               activeSection === 'events'
@@ -446,6 +476,94 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <span>Security &amp; Password</span>
           </button>
         </div>
+
+        {/* ================= HOME BANNER SECTION ================= */}
+        {activeSection === 'banner' && (
+          <div className="max-w-4xl mx-auto mt-8 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
+                <Image className="w-5 h-5 text-orange-600" />
+                <span>Home Page Top Banner</span>
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">
+                Upload your exact banner image (e.g. <code className="font-bold text-orange-700">banner.png</code>). It renders full-width at the very top of the Home page with zero overlays or extra text.
+              </p>
+            </div>
+
+            <div className="p-6 border-2 border-dashed border-orange-300 bg-orange-50/40 rounded-2xl text-center space-y-3">
+              <label className="inline-flex items-center space-x-2 px-5 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-600/20 transition cursor-pointer">
+                <Plus className="w-4 h-4" />
+                <span>{savingBanner ? 'Uploading...' : 'Select Banner Image File (banner.png)'}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBannerFileUpload}
+                  className="hidden"
+                />
+              </label>
+              <p className="text-xs text-gray-600">
+                Select <span className="font-semibold">banner.png</span> from your computer to publish it immediately across all devices.
+              </p>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setSavingBanner(true);
+                await contentService.saveHomeBanner(bannerInputUrl);
+                setSavingBanner(false);
+                showNotification('Home Banner updated!');
+              }}
+              className="space-y-3"
+            >
+              <label className="block text-xs font-bold text-gray-700 uppercase">
+                Or Paste Banner Image URL / Path
+              </label>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  value={bannerInputUrl}
+                  onChange={(e) => setBannerInputUrl(e.target.value)}
+                  placeholder="/banner.png or https://..."
+                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
+                />
+                <button
+                  type="submit"
+                  disabled={savingBanner}
+                  className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                >
+                  Save URL
+                </button>
+                {(homeBannerUrl || bannerInputUrl) && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setBannerInputUrl('');
+                      await contentService.clearHomeBanner();
+                      showNotification('Custom Home Banner cleared');
+                    }}
+                    className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl text-xs font-bold transition cursor-pointer"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            </form>
+
+            {(homeBannerUrl || bannerInputUrl) && (
+              <div className="space-y-2 pt-2">
+                <p className="text-xs font-bold text-gray-700 uppercase">Current Active Banner Preview</p>
+                <div className="rounded-xl overflow-hidden border border-gray-200 bg-slate-950">
+                  <img
+                    src={homeBannerUrl || bannerInputUrl}
+                    alt="Active Home Banner Preview"
+                    className="w-full h-auto block"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ================= BLOG POSTS SECTION ================= */}
         {activeSection === 'posts' && (

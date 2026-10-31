@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavTab, MagazineEditionId, Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent } from './types';
 import { Navbar } from './components/Navbar';
+import { HomeBanner } from './components/HomeBanner';
 import { HomeIdcIntro } from './components/HomeIdcIntro';
 import { AchieversSlider } from './components/AchieversSlider';
 import { NewsSlider } from './components/NewsSlider';
@@ -59,6 +60,8 @@ export default function App() {
   const [projects, setProjects] = useState<ProjectShowcase[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [events, setEvents] = useState<DiasporaEvent[]>([]);
+  const [homeBannerUrl, setHomeBannerUrl] = useState<string>('');
+  const [homeBannerReady, setHomeBannerReady] = useState<boolean>(false);
 
   // Modal inspection
   const [activeModalItem, setActiveModalItem] = useState<
@@ -109,6 +112,10 @@ export default function App() {
     const unsubProjects = contentService.subscribeProjects(setProjects);
     const unsubPosts = contentService.subscribePosts(setPosts);
     const unsubEvents = contentService.subscribeEvents(setEvents);
+    const unsubBanner = contentService.subscribeHomeBanner((url) => {
+      setHomeBannerUrl(url);
+      setHomeBannerReady(true);
+    });
 
     return () => {
       unsubAuth();
@@ -117,6 +124,7 @@ export default function App() {
       unsubProjects();
       unsubPosts();
       unsubEvents();
+      unsubBanner();
     };
   }, []);
 
@@ -176,6 +184,7 @@ export default function App() {
             projects={projects}
             posts={posts}
             events={events}
+            homeBannerUrl={homeBannerUrl}
             onClose={() => navigateTo('/')}
             onAdminLogout={handleAdminLogout}
           />
@@ -325,6 +334,9 @@ export default function App() {
       <main className="flex-1">
         {currentTab === 'home' && (
           <>
+            {/* Top Exact Banner Image (No text overlays or extra UI) */}
+            <HomeBanner bannerUrl={homeBannerUrl} bannerReady={homeBannerReady} />
+
             {/* Official Indian Diaspora Club (IDC) Introduction & About Section */}
             <HomeIdcIntro
               onSelectTab={(tab) => {

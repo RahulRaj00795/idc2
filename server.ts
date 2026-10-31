@@ -23,7 +23,66 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 async function startServer() {
   const app = express();
-  app.use(express.json());
+  app.use(express.json({ limit: '25mb' }));
+
+  // Save exact lossless banner image directly to public/banner.png
+  app.post('/api/upload-banner', async (req: Request, res: Response) => {
+    try {
+      const { dataUrl } = req.body as { dataUrl?: string };
+      if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) {
+        res.status(400).json({ status: 'error', message: 'Invalid image dataUrl' });
+        return;
+      }
+
+      const commaIdx = dataUrl.indexOf(',');
+      if (commaIdx === -1) {
+        res.status(400).json({ status: 'error', message: 'Malformed base64 image payload' });
+        return;
+      }
+
+      const base64Data = dataUrl.slice(commaIdx + 1);
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      const publicDir = path.resolve(__dirname, 'public');
+      const aistudioDir = path.join(publicDir, 'assets', 'aistudio');
+      await fs.promises.mkdir(aistudioDir, { recursive: true });
+
+      await fs.promises.writeFile(path.join(publicDir, 'banner.png'), buffer);
+      await fs.promises.writeFile(path.join(aistudioDir, 'banner.png'), buffer);
+
+      const distDir = path.resolve(__dirname, 'dist');
+      if (fs.existsSync(distDir)) {
+        await fs.promises.writeFile(path.join(distDir, 'banner.png'), buffer);
+      }
+
+      res.json({ status: 'ok', url: `/banner.png?v=${Date.now()}` });
+    } catch (err) {
+      console.error('Error saving banner file:', err);
+      res.status(500).json({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Failed to write banner file',
+      });
+    }
+  });
+
+  app.delete('/api/upload-banner', async (_req: Request, res: Response) => {
+    try {
+      const targets = [
+        path.resolve(__dirname, 'public', 'banner.png'),
+        path.resolve(__dirname, 'public', 'assets', 'aistudio', 'banner.png'),
+        path.resolve(__dirname, 'dist', 'banner.png'),
+      ];
+      for (const filePath of targets) {
+        if (fs.existsSync(filePath)) {
+          await fs.promises.unlink(filePath);
+        }
+      }
+      res.json({ status: 'ok' });
+    } catch (err) {
+      console.error('Error removing banner file:', err);
+      res.status(500).json({ status: 'error', message: 'Failed to remove banner file' });
+    }
+  });
 
   // Proxy endpoint for NewsData.io India Latest Events & News feed
   app.get('/api/events-feed', async (req: Request, res: Response) => {

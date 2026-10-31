@@ -605,5 +605,121 @@ export const contentService = {
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, `events/${id}`);
     }
+  },
+
+  // ==================== HOME BANNER ====================
+  subscribeHomeBanner(callback: (imageUrl: string) => void): () => void {
+    const cacheKey = `${STORAGE_PREFIX}home_banner`;
+    const cachedUrl = localStorage.getItem(cacheKey) || '';
+    if (cachedUrl) {
+      callback(cachedUrl);
+    }
+
+    try {
+      const unsub = onSnapshot(
+        doc(db, 'siteConfig', 'homeBanner'),
+        (snap) => {
+          if (snap.exists()) {
+            const url = (snap.data()?.imageUrl as string) || '';
+            localStorage.setItem(cacheKey, url);
+            callback(url);
+          } else {
+            localStorage.removeItem(cacheKey);
+            callback('');
+          }
+        },
+        (error) => {
+          console.warn('Home banner snapshot fallback to cache:', error);
+          callback(localStorage.getItem(cacheKey) || '');
+        }
+      );
+      return unsub;
+    } catch (err) {
+      console.warn('Home banner subscription error:', err);
+      return () => {};
+    }
+  },
+
+  async saveHomeBanner(imageUrl: string): Promise<void> {
+    const cacheKey = `${STORAGE_PREFIX}home_banner`;
+    const trimmed = imageUrl.trim();
+    try {
+      if (!trimmed) {
+        await deleteDoc(doc(db, 'siteConfig', 'homeBanner'));
+        localStorage.removeItem(cacheKey);
+      } else {
+        await setDoc(
+          doc(db, 'siteConfig', 'homeBanner'),
+          { imageUrl: trimmed, updatedAt: serverTimestamp() },
+          { merge: true }
+        );
+        localStorage.setItem(cacheKey, trimmed);
+      }
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'siteConfig/homeBanner');
+    }
+  },
+
+  async clearHomeBanner(): Promise<void> {
+    try {
+      await fetch('/api/upload-banner', { method: 'DELETE' });
+    } catch {
+      // Ignore if static endpoint is unavailable
+    }
+    await this.saveHomeBanner('');
+  },
+
+  async uploadExactBannerFile(file: File): Promise<string> {
+    const rawDataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Failed to read image file'));
+      reader.readAsDataURL(file);
+    });
+
+    // 1. Persist exact untouched original PNG/image bytes to public/banner.png on server
+    try {
+      await fetch('/api/upload-banner', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUrl: rawDataUrl }),
+      });
+    } catch {
+      // Continue to Firestore persistence even if static write is read-only in production
+    }
+
+    // 2. Persist in Firestore siteConfig/homeBanner (keep lossless if <= 900KB, else high-res WebP)
+    let firestoreDataUrl = rawDataUrl;
+    if (rawDataUrl.length > 900_000) {
+      firestoreDataUrl = await new Promise<string>((resolve) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const maxWidth = 2400;
+          const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(rawDataUrl);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          let encoded = canvas.toDataURL('image/webp', 0.94);
+          if (encoded.length > 900_000) {
+            encoded = canvas.toDataURL('image/webp', 0.86);
+          }
+          if (encoded.length > 900_000) {
+            encoded = canvas.toDataURL('image/jpeg', 0.85);
+          }
+          resolve(encoded);
+        };
+        img.onerror = () => resolve(rawDataUrl);
+        img.src = rawDataUrl;
+      });
+    }
+
+    await this.saveHomeBanner(firestoreDataUrl);
+    return firestoreDataUrl;
   }
 };
