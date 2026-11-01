@@ -91,7 +91,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
                 <button onClick={() => onSelectTab('home')} className="hover:text-orange-400 transition cursor-pointer">
-                  Home (Diaspora Achievers)
+                  Home
                 </button>
               </li>
               <li>
@@ -101,7 +101,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
               </li>
               <li>
                 <button onClick={() => onSelectTab('nri-pio')} className="hover:text-orange-400 transition cursor-pointer">
-                  NRI / PIO Legal &amp; Banking
+                  Our NRI / PIO
                 </button>
               </li>
               <li>

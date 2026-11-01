@@ -8,7 +8,6 @@ import { NavTab, MagazineEditionId, Achiever, NewsItem, ProjectShowcase, BlogPos
 import { Navbar } from './components/Navbar';
 import { HomeBanner } from './components/HomeBanner';
 import { HomeIdcIntro } from './components/HomeIdcIntro';
-import { AchieversSlider } from './components/AchieversSlider';
 import { NewsSlider } from './components/NewsSlider';
 import { PartnersMarquee } from './components/PartnersMarquee';
 import { UpcomingEventsShowcase } from './components/UpcomingEventsShowcase';
@@ -356,13 +355,7 @@ export default function App() {
               }}
             />
 
-            {/* 1. Diaspora Achievers with auto-rotation and arrows matching sketch */}
-            <AchieversSlider
-              achievers={achievers}
-              onSelectAchiever={(achiever) => setActiveModalItem({ type: 'achiever', data: achiever })}
-            />
-
-            {/* 2. Diaspora News with arrows matching sketch */}
+            {/* 1. Diaspora News with arrows matching sketch */}
             <NewsSlider
               news={news}
               onSelectNews={(item) => setActiveModalItem({ type: 'news', data: item })}

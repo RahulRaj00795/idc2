@@ -1265,7 +1265,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <span>{editingAchieverId ? 'Edit Achiever' : 'Add Diaspora Achiever'}</span>
               </h2>
               <p className="text-xs text-gray-500 mb-5">
-                Features on the top animated carousel slider ("Diaspora Achievers").
+                Add and store Diaspora Achievers in the backend database (currently hidden from the public Homepage for future release).
               </p>
 
               <form onSubmit={handleSaveAchiever} className="space-y-4">
@@ -1385,7 +1385,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     className="ml-auto inline-flex items-center space-x-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-600/20 transition cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>{editingAchieverId ? 'Update Achiever' : 'Add to Slider'}</span>
+                    <span>{editingAchieverId ? 'Update Achiever' : 'Save Achiever'}</span>
                   </button>
                 </div>
               </form>
@@ -1393,9 +1393,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             {/* Existing List */}
             <div className="lg:col-span-7 space-y-4">
-              <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">
-                Current Achievers in Slider ({achievers.length})
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                  Stored Achievers ({achievers.length})
+                </h3>
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                  Stored in Backend • Hidden on Public Site
+                </span>
+              </div>
               {achievers.map((ach) => (
                 <div
                   key={ach.id}
