@@ -4,9 +4,10 @@ import {
   NewsItem,
   ProjectShowcase,
   BlogPost,
-  DiasporaEvent
+  DiasporaEvent,
+  ContactSubmission
 } from '../types';
-import { contentService } from '../services/contentService';
+import { contentService, CONTACT_RECIPIENT_EMAIL } from '../services/contentService';
 import {
   ShieldCheck,
   Plus,
@@ -27,7 +28,10 @@ import {
   X,
   Lock,
   Key,
-  LogOut
+  LogOut,
+  Mail,
+  Globe,
+  Clock
 } from 'lucide-react';
 import { adminAuthService, DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD } from '../services/adminAuth';
 import { User } from 'firebase/auth';
@@ -40,11 +44,12 @@ interface AdminPanelProps {
   posts: BlogPost[];
   events: DiasporaEvent[];
   homeBannerUrl: string;
+  contactSubmissions: ContactSubmission[];
   onClose: () => void;
   onAdminLogout: () => void;
 }
 
-type AdminSection = 'banner' | 'events' | 'posts' | 'achievers' | 'news' | 'security';
+type AdminSection = 'banner' | 'contacts' | 'events' | 'posts' | 'achievers' | 'news' | 'security';
 
 // Curated high quality presets for quick image selection
 const IMAGE_PRESETS = [
@@ -64,6 +69,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   posts,
   events,
   homeBannerUrl,
+  contactSubmissions,
   onClose,
   onAdminLogout
 }) => {
@@ -417,6 +423,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
 
           <button
+            onClick={() => setActiveSection('contacts')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer ${
+              activeSection === 'contacts'
+                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Mail className="w-4 h-4" />
+            <span>Contact Inquiries ({contactSubmissions.length})</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('events')}
             className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer ${
               activeSection === 'events'
@@ -560,6 +578,135 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     className="w-full h-auto block"
                   />
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ================= CONTACT INQUIRIES SECTION ================= */}
+        {activeSection === 'contacts' && (
+          <div className="max-w-5xl mx-auto mt-8 space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
+                  <Mail className="w-5 h-5 text-orange-600" />
+                  <span>Contact Us Submissions ({contactSubmissions.length})</span>
+                </h2>
+                <p className="text-xs text-gray-500 mt-1">
+                  All Contact Us messages are saved in Firestore and forwarded to{' '}
+                  <span className="font-bold text-orange-700">{CONTACT_RECIPIENT_EMAIL}</span>.
+                </p>
+              </div>
+            </div>
+
+            {contactSubmissions.some((c) => c.emailStatus === 'pending_activation') && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start space-x-3 text-amber-900 text-xs">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold">One-Time Email Activation Needed</p>
+                  <p className="mt-0.5 text-amber-800">
+                    Check <span className="font-bold">{CONTACT_RECIPIENT_EMAIL}</span> (including Spam/Promotions) for the confirmation email from FormSubmit and click{' '}
+                    <span className="font-bold">&ldquo;Activate Form&rdquo;</span> once so future submissions arrive directly in your inbox. All messages below are already safely stored in this database.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {contactSubmissions.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+                <Mail className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                <h3 className="text-sm font-bold text-gray-800">No Contact Inquiries Yet</h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  Messages submitted via the Contact Us page will appear here in real time and be emailed to {CONTACT_RECIPIENT_EMAIL}.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {contactSubmissions.map((item) => {
+                  const formattedDate = item.createdAt
+                    ? new Date(item.createdAt).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                      })
+                    : 'Recent';
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs hover:border-orange-300 transition space-y-4"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-base font-bold text-gray-900">{item.subject}</h3>
+                            {item.emailStatus === 'sent' && (
+                              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-[11px] font-bold">
+                                Emailed to {item.recipientEmail}
+                              </span>
+                            )}
+                            {item.emailStatus === 'pending_activation' && (
+                              <span className="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-md text-[11px] font-bold">
+                                Awaiting 1-Time Email Activation
+                              </span>
+                            )}
+                            {item.emailStatus === 'failed' && (
+                              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded-md text-[11px] font-bold">
+                                Stored in Database
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600">
+                            <span className="font-semibold text-gray-900">{item.fullName}</span>
+                            <a
+                              href={`mailto:${item.email}?subject=${encodeURIComponent(`Re: ${item.subject}`)}`}
+                              className="text-orange-600 hover:underline font-medium inline-flex items-center space-x-1"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                              <span>{item.email}</span>
+                            </a>
+                            {item.country && (
+                              <span className="inline-flex items-center space-x-1 text-gray-500">
+                                <Globe className="w-3.5 h-3.5" />
+                                <span>{item.country}</span>
+                              </span>
+                            )}
+                            <span className="inline-flex items-center space-x-1 text-gray-400">
+                              <Clock className="w-3.5 h-3.5" />
+                              <span>{formattedDate}</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 shrink-0">
+                          <a
+                            href={`mailto:${item.email}?subject=${encodeURIComponent(`Re: ${item.subject}`)}`}
+                            className="px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg text-xs font-bold transition"
+                          >
+                            Reply
+                          </a>
+                          <button
+                            onClick={async () => {
+                              await contentService.deleteContactSubmission(item.id);
+                              showNotification('Contact inquiry deleted');
+                            }}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                            title="Delete Inquiry"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                        {item.message}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

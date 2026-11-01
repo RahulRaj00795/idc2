@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { NavTab, MagazineEditionId, Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent } from './types';
+import { NavTab, MagazineEditionId, Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent, ContactSubmission } from './types';
 import { Navbar } from './components/Navbar';
 import { HomeBanner } from './components/HomeBanner';
 import { HomeIdcIntro } from './components/HomeIdcIntro';
@@ -61,6 +61,7 @@ export default function App() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [events, setEvents] = useState<DiasporaEvent[]>([]);
   const [homeBannerUrl, setHomeBannerUrl] = useState<string>('');
+  const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
 
   // Modal inspection
   const [activeModalItem, setActiveModalItem] = useState<
@@ -124,6 +125,15 @@ export default function App() {
     };
   }, []);
 
+  // Subscribe to Contact Us inquiries only when Admin is authenticated
+  useEffect(() => {
+    if (!isAdminAuthenticated) return;
+    const unsubContacts = contentService.subscribeContactSubmissions(setContactSubmissions);
+    return () => {
+      unsubContacts();
+    };
+  }, [isAdminAuthenticated]);
+
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
@@ -181,6 +191,7 @@ export default function App() {
             posts={posts}
             events={events}
             homeBannerUrl={homeBannerUrl}
+            contactSubmissions={contactSubmissions}
             onClose={() => navigateTo('/')}
             onAdminLogout={handleAdminLogout}
           />

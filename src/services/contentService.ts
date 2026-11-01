@@ -8,7 +8,9 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent } from '../types';
+import { Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent, ContactSubmission } from '../types';
+
+export const CONTACT_RECIPIENT_EMAIL = 'indiandiasporaclub@gmail.com';
 import {
   INITIAL_ACHIEVERS,
   INITIAL_NEWS,
@@ -729,5 +731,137 @@ export const contentService = {
 
     await this.saveHomeBanner(firestoreDataUrl);
     return firestoreDataUrl;
+  },
+
+  // ==================== CONTACT US SUBMISSIONS ====================
+  subscribeContactSubmissions(callback: (items: ContactSubmission[]) => void): () => void {
+    const cached = getCached<ContactSubmission>('contact_submissions', []);
+    callback(cached);
+
+    try {
+      const unsub = onSnapshot(
+        collection(db, 'contactSubmissions'),
+        (snapshot) => {
+          const updatedMap = new Map<string, unknown>();
+          const rawList: ContactSubmission[] = snapshot.docs.map((docSnap) => {
+            const data = docSnap.data();
+            updatedMap.set(docSnap.id, data.updatedAt);
+            return {
+              id: docSnap.id,
+              fullName: data.fullName || '',
+              email: data.email || '',
+              country: data.country || '',
+              subject: data.subject || '',
+              message: data.message || '',
+              recipientEmail: data.recipientEmail || CONTACT_RECIPIENT_EMAIL,
+              emailStatus: data.emailStatus || 'sent',
+              createdAt: data.createdAt || ''
+            } as ContactSubmission;
+          });
+          const sorted = sortNewestFirst(rawList, updatedMap);
+          setCached('contact_submissions', sorted);
+          callback(sorted);
+        },
+        (error) => {
+          console.warn('Contact submissions snapshot fallback to cache:', error);
+          callback(getCached<ContactSubmission>('contact_submissions', []));
+        }
+      );
+      return unsub;
+    } catch (err) {
+      handleFirestoreError(err, OperationType.LIST, 'contactSubmissions');
+      return () => {};
+    }
+  },
+
+  async saveContactSubmission(item: ContactSubmission): Promise<void> {
+    const safeId = (item.id || `contact-${Date.now()}`)
+      .replace(/[^a-zA-Z0-9_-]/g, '')
+      .slice(0, 128) || `contact-${Date.now()}`;
+
+    const cleanItem: ContactSubmission = {
+      id: safeId,
+      fullName: item.fullName.trim().slice(0, 150),
+      email: item.email.trim().slice(0, 200),
+      country: (item.country || '').trim().slice(0, 100),
+      subject: item.subject.trim().slice(0, 250),
+      message: item.message.trim().slice(0, 5000),
+      recipientEmail: (item.recipientEmail || CONTACT_RECIPIENT_EMAIL).trim().slice(0, 200),
+      emailStatus: item.emailStatus || 'sending',
+      createdAt: (item.createdAt || new Date().toISOString()).slice(0, 100)
+    };
+
+    try {
+      await setDoc(doc(db, 'contactSubmissions', safeId), {
+        id: cleanItem.id,
+        fullName: cleanItem.fullName,
+        email: cleanItem.email,
+        country: cleanItem.country,
+        subject: cleanItem.subject,
+        message: cleanItem.message,
+        recipientEmail: cleanItem.recipientEmail,
+        emailStatus: cleanItem.emailStatus,
+        createdAt: cleanItem.createdAt,
+        updatedAt: serverTimestamp()
+      });
+
+      const list = getCached<ContactSubmission>('contact_submissions', []);
+      const idx = list.findIndex((i) => i.id === safeId);
+      if (idx >= 0) list[idx] = cleanItem;
+      else list.unshift(cleanItem);
+      setCached('contact_submissions', sortNewestFirst(list));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `contactSubmissions/${safeId}`);
+    }
+  },
+
+  async deleteContactSubmission(id: string): Promise<void> {
+    try {
+      await deleteDoc(doc(db, 'contactSubmissions', id));
+      const list = getCached<ContactSubmission>('contact_submissions', []).filter((i) => i.id !== id);
+      setCached('contact_submissions', list);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `contactSubmissions/${id}`);
+    }
+  },
+
+  async deliverContactEmail(
+    item: Pick<ContactSubmission, 'fullName' | 'email' | 'country' | 'subject' | 'message'>
+  ): Promise<'sent' | 'pending_activation' | 'failed'> {
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${CONTACT_RECIPIENT_EMAIL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          name: item.fullName.trim().slice(0, 150),
+          email: item.email.trim().slice(0, 200),
+          country: item.country.trim().slice(0, 100) || 'Not specified',
+          subject: item.subject.trim().slice(0, 250),
+          message: item.message.trim().slice(0, 5000),
+          _subject: `[Indian Diaspora Club] ${item.subject.trim().slice(0, 200)}`,
+          _replyto: item.email.trim().slice(0, 200),
+          _template: 'table',
+          _captcha: 'false'
+        })
+      });
+
+      const data = await response.json().catch(() => null);
+      if (response.ok && (data?.success === 'true' || data?.success === true)) {
+        return 'sent';
+      }
+
+      const msg = String(data?.message || '').toLowerCase();
+      if (msg.includes('activat')) {
+        return 'pending_activation';
+      }
+
+      return response.ok ? 'sent' : 'failed';
+    } catch (err) {
+      console.warn('Email forwarding error:', err);
+      return 'failed';
+    }
   }
 };

@@ -49,9 +49,58 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidContactSubmission(data) {
+      return data.keys().hasAll([
+          'id',
+          'fullName',
+          'email',
+          'country',
+          'subject',
+          'message',
+          'recipientEmail',
+          'emailStatus',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id',
+          'fullName',
+          'email',
+          'country',
+          'subject',
+          'message',
+          'recipientEmail',
+          'emailStatus',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.fullName is string && data.fullName.size() >= 1 && data.fullName.size() <= 150 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 200 &&
+        data.country is string && data.country.size() <= 100 &&
+        data.subject is string && data.subject.size() >= 1 && data.subject.size() <= 250 &&
+        data.message is string && data.message.size() >= 1 && data.message.size() <= 5000 &&
+        data.recipientEmail is string && data.recipientEmail.size() >= 3 && data.recipientEmail.size() <= 200 &&
+        data.emailStatus is string && data.emailStatus in ['sending', 'sent', 'pending_activation', 'failed'] &&
+        data.createdAt is string && data.createdAt.size() >= 1 && data.createdAt.size() <= 100 &&
+        data.updatedAt is timestamp;
+    }
+
     // Site Configuration (e.g. Home Banner)
     match /siteConfig/{configId} {
       allow read, write: if true;
+    }
+
+    // Contact Us Form Submissions
+    match /contactSubmissions/{submissionId} {
+      allow read, delete: if true;
+      allow create, update: if isValidId(submissionId) &&
+        isValidContactSubmission(request.resource.data) &&
+        request.resource.data.id == submissionId;
     }
 
     // Admin collection

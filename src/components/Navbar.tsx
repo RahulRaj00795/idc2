@@ -221,7 +221,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* Publish / Contact US */}
+            {/* Contact Us */}
             <button
               type="button"
               onClick={() => handleNavClick('publish-contact')}
@@ -231,7 +231,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50/60'
               }`}
             >
-              Publish / Contact US
+              Contact Us
             </button>
           </nav>
 
@@ -362,7 +362,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               currentTab === 'publish-contact' ? 'bg-orange-600 text-white' : 'text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Publish / Contact US
+            Contact Us
           </button>
         </div>
       )}

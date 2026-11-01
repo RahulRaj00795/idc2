@@ -119,17 +119,12 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
 
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">
-              Contribution &amp; Support
+              Connect &amp; Support
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
                 <button onClick={() => onSelectTab('publish-contact')} className="hover:text-orange-400 transition cursor-pointer">
-                  Submit Story for Publication
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onSelectTab('publish-contact')} className="hover:text-orange-400 transition cursor-pointer">
-                  Contact Editorial Bureau
+                  Contact Us
                 </button>
               </li>
               <li>

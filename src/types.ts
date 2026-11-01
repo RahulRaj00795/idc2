@@ -91,11 +91,24 @@ export interface NewsDataResponse {
   message?: string;
 }
 
+export interface ContactSubmission {
+  id: string;
+  fullName: string;
+  email: string;
+  country: string;
+  subject: string;
+  message: string;
+  recipientEmail: string;
+  emailStatus: 'sending' | 'sent' | 'pending_activation' | 'failed';
+  createdAt: string;
+}
+
 export type MagazineEditionId =
   | 'uniting-indian-diaspora'
   | 'glorious-diaspora-pride-of-india'
   | 'special-edition-pbd-2019';
 
 export type NavTab = 'home' | 'about' | 'nri-pio' | 'events' | 'magazine' | 'publish-contact';
+
 
 

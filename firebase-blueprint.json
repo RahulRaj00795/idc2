@@ -267,6 +267,67 @@
         }
       },
       "required": ["imageUrl"]
+    },
+    "contactSubmission": {
+      "title": "Contact Submission",
+      "description": "Inquiries submitted through the Contact Us form and delivered to indiandiasporaclub@gmail.com",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique submission identifier"
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150,
+          "description": "Sender full name"
+        },
+        "email": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200,
+          "description": "Sender email address"
+        },
+        "country": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Sender country of residence"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250,
+          "description": "Subject of the inquiry"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000,
+          "description": "Full message body"
+        },
+        "recipientEmail": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200,
+          "description": "Destination email address receiving the inquiry"
+        },
+        "emailStatus": {
+          "type": "string",
+          "maxLength": 50,
+          "enum": ["sending", "sent", "pending_activation", "failed"],
+          "description": "Email forwarding status"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "ISO timestamp of submission"
+        }
+      },
+      "required": ["id", "fullName", "email", "country", "subject", "message", "recipientEmail", "emailStatus", "createdAt"]
     }
   },
   "firestore": {
@@ -293,6 +354,10 @@
     "/siteConfig/{configId}": {
       "schema": "siteConfig",
       "description": "Global site configuration documents including homeBanner"
+    },
+    "/contactSubmissions/{submissionId}": {
+      "schema": "contactSubmission",
+      "description": "Contact Us form submissions stored in Firestore and forwarded to indiandiasporaclub@gmail.com"
     }
   }
 }
