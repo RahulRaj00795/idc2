@@ -712,6 +712,14 @@ export const contentService = {
           if (encoded.length > 900_000) {
             encoded = canvas.toDataURL('image/jpeg', 0.85);
           }
+          if (encoded.length > 900_000) {
+            const fallbackWidth = 1600;
+            const fallbackScale = img.width > fallbackWidth ? fallbackWidth / img.width : 1;
+            canvas.width = Math.round(img.width * fallbackScale);
+            canvas.height = Math.round(img.height * fallbackScale);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            encoded = canvas.toDataURL('image/jpeg', 0.8);
+          }
           resolve(encoded);
         };
         img.onerror = () => resolve(rawDataUrl);

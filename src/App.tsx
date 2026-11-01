@@ -61,7 +61,6 @@ export default function App() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [events, setEvents] = useState<DiasporaEvent[]>([]);
   const [homeBannerUrl, setHomeBannerUrl] = useState<string>('');
-  const [homeBannerReady, setHomeBannerReady] = useState<boolean>(false);
 
   // Modal inspection
   const [activeModalItem, setActiveModalItem] = useState<
@@ -112,10 +111,7 @@ export default function App() {
     const unsubProjects = contentService.subscribeProjects(setProjects);
     const unsubPosts = contentService.subscribePosts(setPosts);
     const unsubEvents = contentService.subscribeEvents(setEvents);
-    const unsubBanner = contentService.subscribeHomeBanner((url) => {
-      setHomeBannerUrl(url);
-      setHomeBannerReady(true);
-    });
+    const unsubBanner = contentService.subscribeHomeBanner(setHomeBannerUrl);
 
     return () => {
       unsubAuth();
@@ -335,7 +331,7 @@ export default function App() {
         {currentTab === 'home' && (
           <>
             {/* Top Exact Banner Image (No text overlays or extra UI) */}
-            <HomeBanner bannerUrl={homeBannerUrl} bannerReady={homeBannerReady} />
+            <HomeBanner bannerUrl={homeBannerUrl} />
 
             {/* Official Indian Diaspora Club (IDC) Introduction & About Section */}
             <HomeIdcIntro
