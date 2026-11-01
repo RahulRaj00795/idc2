@@ -103,12 +103,24 @@ export interface ContactSubmission {
   createdAt: string;
 }
 
+export interface NriPioMember {
+  id: string;
+  name: string;
+  photoUrl: string;
+  country: string;
+  awarded: string;
+  designation?: string;
+  details: string;
+  createdAt: string;
+}
+
 export type MagazineEditionId =
   | 'uniting-indian-diaspora'
   | 'glorious-diaspora-pride-of-india'
   | 'special-edition-pbd-2019';
 
 export type NavTab = 'home' | 'about' | 'nri-pio' | 'events' | 'magazine' | 'publish-contact';
+
 
 
 

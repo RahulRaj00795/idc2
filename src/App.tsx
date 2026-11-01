@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { NavTab, MagazineEditionId, Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent, ContactSubmission } from './types';
+import { NavTab, MagazineEditionId, Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent, ContactSubmission, NriPioMember } from './types';
 import { Navbar } from './components/Navbar';
 import { HomeBanner } from './components/HomeBanner';
 import { HomeIdcIntro } from './components/HomeIdcIntro';
@@ -62,6 +62,7 @@ export default function App() {
   const [events, setEvents] = useState<DiasporaEvent[]>([]);
   const [homeBannerUrl, setHomeBannerUrl] = useState<string>('');
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
+  const [nriPioMembers, setNriPioMembers] = useState<NriPioMember[]>([]);
 
   // Modal inspection
   const [activeModalItem, setActiveModalItem] = useState<
@@ -113,6 +114,7 @@ export default function App() {
     const unsubPosts = contentService.subscribePosts(setPosts);
     const unsubEvents = contentService.subscribeEvents(setEvents);
     const unsubBanner = contentService.subscribeHomeBanner(setHomeBannerUrl);
+    const unsubNriPio = contentService.subscribeNriPio(setNriPioMembers);
 
     return () => {
       unsubAuth();
@@ -122,6 +124,7 @@ export default function App() {
       unsubPosts();
       unsubEvents();
       unsubBanner();
+      unsubNriPio();
     };
   }, []);
 
@@ -192,6 +195,7 @@ export default function App() {
             events={events}
             homeBannerUrl={homeBannerUrl}
             contactSubmissions={contactSubmissions}
+            nriPioMembers={nriPioMembers}
             onClose={() => navigateTo('/')}
             onAdminLogout={handleAdminLogout}
           />
@@ -388,7 +392,7 @@ export default function App() {
           />
         )}
 
-        {currentTab === 'nri-pio' && <NriPioHub />}
+        {currentTab === 'nri-pio' && <NriPioHub members={nriPioMembers} />}
 
         {currentTab === 'events' && (
           <EventsSection

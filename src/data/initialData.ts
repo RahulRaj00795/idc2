@@ -1,4 +1,4 @@
-import { Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent } from '../types';
+import { Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent, NriPioMember } from '../types';
 
 export const INITIAL_ACHIEVERS: Achiever[] = [
   {
@@ -229,4 +229,52 @@ export const INITIAL_EVENTS: DiasporaEvent[] = [
     createdAt: '2026-10-10T07:00:00.000Z'
   }
 ];
+
+export const INITIAL_NRI_PIO: NriPioMember[] = [
+  {
+    id: 'nri-pio-1',
+    name: 'Dr. Rajendra Prasad Verma',
+    photoUrl: '/assets/nri-pio/nri_leader_uk_portrait.jpg',
+    country: 'United Kingdom',
+    awarded: 'Pravasi Bharatiya Samman',
+    designation: 'Industrialist & Philanthropist',
+    details:
+      'Dr. Rajendra Prasad Verma is a distinguished British-Indian industrialist and philanthropist based in London whose four-decade career has strengthened bilateral trade and institutional partnerships between the United Kingdom and India.\n\nConferred the Pravasi Bharatiya Samman for his service to international commerce and community welfare, he has established rural higher-education scholarships, supported healthcare infrastructure across northern India, and mentored hundreds of first-generation entrepreneurs across the global Indian diaspora.',
+    createdAt: '2026-10-12T08:30:00.000Z'
+  },
+  {
+    id: 'nri-pio-2',
+    name: 'Dr. Meera Subramanian',
+    photoUrl: '/assets/nri-pio/nri_scientist_usa_portrait.jpg',
+    country: 'United States',
+    awarded: 'Padma Shri',
+    designation: 'Biomedical Scientist & Academic Chair',
+    details:
+      'Dr. Meera Subramanian leads translational genomics and public-health research in Boston while co-directing collaborative clinical research fellowships with leading medical institutes in Bengaluru, Hyderabad, and New Delhi.\n\nHonoured with the Padma Shri for contributions to science and affordable diagnostics, she actively champions Indo-US scientific exchange programmes and mentors emerging women researchers across India and North America.',
+    createdAt: '2026-10-11T08:30:00.000Z'
+  },
+  {
+    id: 'nri-pio-3',
+    name: 'Vikramjit Singh Malhotra',
+    photoUrl: '/assets/nri-pio/nri_entrepreneur_uae_portrait.jpg',
+    country: 'UAE',
+    awarded: 'Pravasi Bharatiya Samman',
+    designation: 'Chairman, Gulf-India Enterprise Forum',
+    details:
+      'Based in Dubai for over twenty-five years, Vikramjit Singh Malhotra has spearheaded cross-border clean-energy, logistics, and manufacturing investments linking Gulf sovereign and private capital with Indian industrial corridors.\n\nRecognised with the Pravasi Bharatiya Samman for community welfare and bilateral economic leadership, he has funded skill-development academies and emergency relief initiatives serving overseas Indian workers and their families.',
+    createdAt: '2026-10-10T08:30:00.000Z'
+  },
+  {
+    id: 'nri-pio-4',
+    name: 'Kavita Krishnan-Nair',
+    photoUrl: '/assets/nri-pio/pio_diplomat_singapore_portrait.jpg',
+    country: 'Singapore',
+    awarded: 'Hind Rattan Award',
+    designation: 'Public Policy Leader & Cultural Patron',
+    details:
+      'A third-generation Person of Indian Origin in Singapore, Kavita Krishnan-Nair serves on regional governance, ASEAN-India trade dialogue, and heritage preservation boards.\n\nRecipient of the Hind Rattan Award, her work celebrates classical Indian arts, literary exchange, and youth leadership fellowships that reconnect young overseas Indians across Southeast Asia with India’s cultural heritage and contemporary innovation ecosystem.',
+    createdAt: '2026-10-09T08:30:00.000Z'
+  }
+];
+
 

@@ -328,6 +328,62 @@
         }
       },
       "required": ["id", "fullName", "email", "country", "subject", "message", "recipientEmail", "emailStatus", "createdAt"]
+    },
+    "nriPio": {
+      "title": "NRI / PIO Member",
+      "description": "Distinguished NRI and PIO member profile displayed on the Our NRI / PIO page and managed via Admin",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique member identifier"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150,
+          "description": "Full name of the NRI / PIO member"
+        },
+        "photoUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800000,
+          "description": "Portrait image URL or compressed uploaded image data URL"
+        },
+        "country": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Country of residence"
+        },
+        "awarded": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Award, honour, or recognition title"
+        },
+        "designation": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Optional professional title or designation"
+        },
+        "details": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000,
+          "description": "Full biography, achievements, and profile details shown in popup"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "ISO timestamp of creation"
+        }
+      },
+      "required": ["id", "name", "photoUrl", "country", "awarded", "designation", "details", "createdAt"]
     }
   },
   "firestore": {
@@ -358,6 +414,11 @@
     "/contactSubmissions/{submissionId}": {
       "schema": "contactSubmission",
       "description": "Contact Us form submissions stored in Firestore and forwarded to indiandiasporaclub@gmail.com"
+    },
+    "/nriPio/{memberId}": {
+      "schema": "nriPio",
+      "description": "NRI and PIO member profiles showcased on Our NRI / PIO page"
     }
   }
 }
+

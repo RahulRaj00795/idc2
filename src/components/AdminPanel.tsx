@@ -5,7 +5,8 @@ import {
   ProjectShowcase,
   BlogPost,
   DiasporaEvent,
-  ContactSubmission
+  ContactSubmission,
+  NriPioMember
 } from '../types';
 import { contentService, CONTACT_RECIPIENT_EMAIL } from '../services/contentService';
 import {
@@ -31,7 +32,9 @@ import {
   LogOut,
   Mail,
   Globe,
-  Clock
+  Clock,
+  Award,
+  Upload
 } from 'lucide-react';
 import { adminAuthService, DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD } from '../services/adminAuth';
 import { User } from 'firebase/auth';
@@ -45,11 +48,19 @@ interface AdminPanelProps {
   events: DiasporaEvent[];
   homeBannerUrl: string;
   contactSubmissions: ContactSubmission[];
+  nriPioMembers: NriPioMember[];
   onClose: () => void;
   onAdminLogout: () => void;
 }
 
-type AdminSection = 'banner' | 'contacts' | 'events' | 'posts' | 'achievers' | 'news' | 'security';
+type AdminSection = 'banner' | 'nri-pio' | 'contacts' | 'events' | 'posts' | 'achievers' | 'news' | 'security';
+
+const NRI_PORTRAIT_PRESETS = [
+  { label: 'Portrait 1', url: '/assets/nri-pio/nri_leader_uk_portrait.jpg' },
+  { label: 'Portrait 2', url: '/assets/nri-pio/nri_scientist_usa_portrait.jpg' },
+  { label: 'Portrait 3', url: '/assets/nri-pio/nri_entrepreneur_uae_portrait.jpg' },
+  { label: 'Portrait 4', url: '/assets/nri-pio/pio_diplomat_singapore_portrait.jpg' }
+];
 
 // Curated high quality presets for quick image selection
 const IMAGE_PRESETS = [
@@ -70,6 +81,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   events,
   homeBannerUrl,
   contactSubmissions,
+  nriPioMembers,
   onClose,
   onAdminLogout
 }) => {
@@ -151,6 +163,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [eventDescription, setEventDescription] = useState('');
   const [eventImageUrl, setEventImageUrl] = useState(IMAGE_PRESETS[6].url);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
+
+  // --- NRI / PIO Form State ---
+  const [nriName, setNriName] = useState('');
+  const [nriPhotoUrl, setNriPhotoUrl] = useState(NRI_PORTRAIT_PRESETS[0].url);
+  const [nriCountry, setNriCountry] = useState('');
+  const [nriAwarded, setNriAwarded] = useState('');
+  const [nriDesignation, setNriDesignation] = useState('');
+  const [nriDetails, setNriDetails] = useState('');
+  const [editingNriId, setEditingNriId] = useState<string | null>(null);
+  const [uploadingNriPhoto, setUploadingNriPhoto] = useState(false);
+  const [savingNri, setSavingNri] = useState(false);
 
   const showNotification = (msg: string) => {
     setActionNotice(msg);
@@ -305,6 +328,62 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setEditingEventId(null);
   };
 
+  // --- NRI / PIO Photo Upload & Submit ---
+  const handleNriPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingNriPhoto(true);
+    try {
+      const encoded = await contentService.encodeNriPioPhotoFile(file);
+      setNriPhotoUrl(encoded);
+      showNotification('Photo uploaded and ready to save!');
+    } catch {
+      showNotification('Failed to process selected photo.');
+    } finally {
+      setUploadingNriPhoto(false);
+      e.target.value = '';
+    }
+  };
+
+  const resetNriForm = () => {
+    setEditingNriId(null);
+    setNriName('');
+    setNriPhotoUrl(NRI_PORTRAIT_PRESETS[0].url);
+    setNriCountry('');
+    setNriAwarded('');
+    setNriDesignation('');
+    setNriDetails('');
+  };
+
+  const handleSaveNriPio = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nriPhotoUrl.trim()) {
+      showNotification('Please upload a photo or enter a photo URL.');
+      return;
+    }
+    setSavingNri(true);
+    try {
+      const existing = editingNriId
+        ? nriPioMembers.find((m) => m.id === editingNriId)
+        : undefined;
+      const item: NriPioMember = {
+        id: editingNriId || `nri-pio-${Date.now()}`,
+        name: nriName.trim(),
+        photoUrl: nriPhotoUrl.trim(),
+        country: nriCountry.trim(),
+        awarded: nriAwarded.trim(),
+        designation: nriDesignation.trim(),
+        details: nriDetails.trim(),
+        createdAt: existing?.createdAt || new Date().toISOString()
+      };
+      await contentService.saveNriPio(item);
+      showNotification(editingNriId ? 'NRI / PIO profile updated!' : 'New NRI / PIO card published!');
+      resetNriForm();
+    } finally {
+      setSavingNri(false);
+    }
+  };
+
   // --- Update Admin Credentials ---
   const handleUpdateCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -412,7 +491,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="flex space-x-2 border-b border-gray-200 pb-3 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveSection('banner')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer whitespace-nowrap shrink-0 ${
               activeSection === 'banner'
                 ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -423,8 +502,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
 
           <button
+            onClick={() => setActiveSection('nri-pio')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer whitespace-nowrap shrink-0 ${
+              activeSection === 'nri-pio'
+                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Award className="w-4 h-4" />
+            <span>NRI / PIO ({nriPioMembers.length})</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('contacts')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition cursor-pointer whitespace-nowrap shrink-0 ${
               activeSection === 'contacts'
                 ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -580,6 +671,259 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ================= NRI / PIO MEMBERS SECTION ================= */}
+        {activeSection === 'nri-pio' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+            {/* Add / Edit Form */}
+            <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+              <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center space-x-2">
+                <Award className="w-5 h-5 text-orange-600" />
+                <span>{editingNriId ? 'Edit NRI / PIO Profile' : 'Add NRI / PIO Profile'}</span>
+              </h2>
+              <p className="text-xs text-gray-500 mb-5">
+                Published directly on the <span className="font-semibold text-gray-700">Our NRI / PIO</span> page with small cards and full-details popup on click.
+              </p>
+
+              <form onSubmit={handleSaveNriPio} className="space-y-4">
+                {/* Photo Upload + URL */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1.5">
+                    Member Photo *
+                  </label>
+
+                  <div className="flex items-center gap-3 mb-2.5">
+                    <div className="w-20 h-16 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shrink-0">
+                      {nriPhotoUrl ? (
+                        <img
+                          src={nriPhotoUrl}
+                          alt="Member preview"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-contain"
+                        />
+                      ) : null}
+                    </div>
+
+                    <div className="flex-1 space-y-1.5">
+                      <label className="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 rounded-xl text-xs font-bold transition cursor-pointer">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>{uploadingNriPhoto ? 'Uploading...' : 'Upload Photo File'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleNriPhotoUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      <p className="text-[11px] text-gray-400">
+                        Upload from your device or paste an image URL below.
+                      </p>
+                    </div>
+                  </div>
+
+                  <input
+                    type="text"
+                    required
+                    value={nriPhotoUrl}
+                    onChange={(e) => setNriPhotoUrl(e.target.value)}
+                    placeholder="Photo URL or uploaded image"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
+                  />
+
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {NRI_PORTRAIT_PRESETS.map((preset, idx) => (
+                      <button
+                        type="button"
+                        key={idx}
+                        onClick={() => setNriPhotoUrl(preset.url)}
+                        className="px-2 py-0.5 bg-gray-100 hover:bg-orange-50 hover:text-orange-600 rounded text-[10px] text-gray-600 cursor-pointer"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Full Name */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={150}
+                    value={nriName}
+                    onChange={(e) => setNriName(e.target.value)}
+                    placeholder="e.g. Dr. Rajendra Prasad Verma"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                {/* Country & Awarded */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                      Country *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={120}
+                      value={nriCountry}
+                      onChange={(e) => setNriCountry(e.target.value)}
+                      placeholder="e.g. United Kingdom"
+                      className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                      Awarded *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={200}
+                      value={nriAwarded}
+                      onChange={(e) => setNriAwarded(e.target.value)}
+                      placeholder="e.g. Pravasi Bharatiya Samman"
+                      className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Optional Designation */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                    Role / Designation (Optional — shown in popup)
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={200}
+                    value={nriDesignation}
+                    onChange={(e) => setNriDesignation(e.target.value)}
+                    placeholder="e.g. Industrialist & Philanthropist"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                {/* Full Details */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                    Full Details (Popup Content) *
+                  </label>
+                  <textarea
+                    required
+                    rows={5}
+                    maxLength={10000}
+                    value={nriDetails}
+                    onChange={(e) => setNriDetails(e.target.value)}
+                    placeholder="Enter full biography, honours, contributions, and details shown when clicking Read More..."
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500"
+                  ></textarea>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  {editingNriId && (
+                    <button
+                      type="button"
+                      onClick={resetNriForm}
+                      className="px-3 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={savingNri || uploadingNriPhoto}
+                    className="ml-auto inline-flex items-center space-x-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-600/20 transition cursor-pointer whitespace-nowrap shrink-0"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>
+                      {savingNri
+                        ? 'Saving...'
+                        : editingNriId
+                          ? 'Update NRI / PIO'
+                          : 'Add NRI / PIO'}
+                    </span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Existing NRI / PIO Cards List */}
+            <div className="lg:col-span-7 space-y-4">
+              <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                Published NRI / PIO Cards ({nriPioMembers.length})
+              </h3>
+
+              {nriPioMembers.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
+                  <Award className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-gray-700">No NRI / PIO profiles yet</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Use the form on the left to add an NRI / PIO card to the public page.
+                  </p>
+                </div>
+              ) : (
+                nriPioMembers.map((member) => (
+                  <div
+                    key={member.id}
+                    className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between gap-4 hover:border-orange-300 transition"
+                  >
+                    <img
+                      src={member.photoUrl}
+                      alt={member.name}
+                      referrerPolicy="no-referrer"
+                      className="w-16 h-16 rounded-xl object-contain shrink-0 bg-gray-100"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-gray-900 truncate">{member.name}</h4>
+                      <p className="text-xs text-gray-600 truncate mt-0.5">
+                        <span className="font-semibold text-gray-800">{member.country}</span>
+                        <span className="mx-1.5 text-gray-300">·</span>
+                        <span className="text-orange-600 font-semibold">{member.awarded}</span>
+                      </p>
+                      <p className="text-[11px] text-gray-500 truncate mt-0.5">{member.details}</p>
+                    </div>
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingNriId(member.id);
+                          setNriName(member.name);
+                          setNriPhotoUrl(member.photoUrl);
+                          setNriCountry(member.country);
+                          setNriAwarded(member.awarded);
+                          setNriDesignation(member.designation || '');
+                          setNriDetails(member.details);
+                        }}
+                        className="p-2 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition cursor-pointer"
+                        title="Edit"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          await contentService.deleteNriPio(member.id);
+                          if (editingNriId === member.id) {
+                            resetNriForm();
+                          }
+                          showNotification('NRI / PIO profile removed');
+                        }}
+                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
 

@@ -90,6 +90,40 @@ service cloud.firestore {
         data.updatedAt is timestamp;
     }
 
+    function isValidNriPio(data) {
+      return data.keys().hasAll([
+          'id',
+          'name',
+          'photoUrl',
+          'country',
+          'awarded',
+          'designation',
+          'details',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id',
+          'name',
+          'photoUrl',
+          'country',
+          'awarded',
+          'designation',
+          'details',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 150 &&
+        data.photoUrl is string && data.photoUrl.size() >= 1 && data.photoUrl.size() <= 800000 &&
+        data.country is string && data.country.size() >= 1 && data.country.size() <= 120 &&
+        data.awarded is string && data.awarded.size() >= 1 && data.awarded.size() <= 200 &&
+        data.designation is string && data.designation.size() <= 200 &&
+        data.details is string && data.details.size() >= 1 && data.details.size() <= 10000 &&
+        data.createdAt is string && data.createdAt.size() >= 1 && data.createdAt.size() <= 100 &&
+        data.updatedAt is timestamp;
+    }
+
     // Site Configuration (e.g. Home Banner)
     match /siteConfig/{configId} {
       allow read, write: if true;
@@ -103,6 +137,14 @@ service cloud.firestore {
         request.resource.data.id == submissionId;
     }
 
+    // NRI / PIO Members
+    match /nriPio/{memberId} {
+      allow read, delete: if true;
+      allow create, update: if isValidId(memberId) &&
+        isValidNriPio(request.resource.data) &&
+        request.resource.data.id == memberId;
+    }
+
     // Admin collection
     match /admins/{adminId} {
       allow read: if true;
@@ -110,3 +152,4 @@ service cloud.firestore {
     }
   }
 }
+

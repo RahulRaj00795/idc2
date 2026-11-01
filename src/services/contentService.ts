@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   setDoc,
   deleteDoc,
   onSnapshot,
@@ -8,7 +9,15 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { Achiever, NewsItem, ProjectShowcase, BlogPost, DiasporaEvent, ContactSubmission } from '../types';
+import {
+  Achiever,
+  NewsItem,
+  ProjectShowcase,
+  BlogPost,
+  DiasporaEvent,
+  ContactSubmission,
+  NriPioMember
+} from '../types';
 
 export const CONTACT_RECIPIENT_EMAIL = 'indiandiasporaclub@gmail.com';
 import {
@@ -16,7 +25,8 @@ import {
   INITIAL_NEWS,
   INITIAL_PROJECTS,
   INITIAL_POSTS,
-  INITIAL_EVENTS
+  INITIAL_EVENTS,
+  INITIAL_NRI_PIO
 } from '../data/initialData';
 
 // Storage keys for offline/fast fallback cache
@@ -39,6 +49,9 @@ for (const b of INITIAL_POSTS) {
 }
 for (const e of INITIAL_EVENTS) {
   SEED_METADATA.set(e.id, { headline: e.title, createdAtMs: Date.parse(e.createdAt || '') || 0 });
+}
+for (const m of INITIAL_NRI_PIO) {
+  SEED_METADATA.set(m.id, { headline: m.name, createdAtMs: Date.parse(m.createdAt || '') || 0 });
 }
 
 function parseTimestampMs(val: unknown): number {
@@ -185,10 +198,34 @@ export const contentService = {
         }, { merge: true });
       }
 
+      await this.seedNriPioInitialData();
+
       console.log('Initial diaspora data successfully seeded into Firestore');
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'seed');
     }
+  },
+
+  async seedNriPioInitialData(): Promise<void> {
+    for (const item of INITIAL_NRI_PIO) {
+      await setDoc(doc(db, 'nriPio', item.id), {
+        id: item.id,
+        name: item.name,
+        photoUrl: item.photoUrl,
+        country: item.country,
+        awarded: item.awarded,
+        designation: item.designation || '',
+        details: item.details,
+        createdAt: item.createdAt,
+        updatedAt: serverTimestamp()
+      });
+    }
+    await setDoc(
+      doc(db, 'siteConfig', 'nriPioSeeded'),
+      { imageUrl: 'seeded', updatedAt: serverTimestamp() },
+      { merge: true }
+    );
+    localStorage.setItem(STORAGE_PREFIX + 'nri_pio_initialized', '1');
   },
 
   // --- Check if DB is empty and auto-seed if needed ---
@@ -198,6 +235,23 @@ export const contentService = {
       if (snap.empty) {
         console.log('No achievers found in Firestore, auto-seeding initial database...');
         await this.seedInitialData();
+      }
+
+      const nriInitSnap = await getDoc(doc(db, 'siteConfig', 'nriPioSeeded'));
+      if (!nriInitSnap.exists()) {
+        const nriSnap = await getDocs(collection(db, 'nriPio'));
+        if (nriSnap.empty) {
+          await this.seedNriPioInitialData();
+        } else {
+          await setDoc(
+            doc(db, 'siteConfig', 'nriPioSeeded'),
+            { imageUrl: 'seeded', updatedAt: serverTimestamp() },
+            { merge: true }
+          );
+          localStorage.setItem(STORAGE_PREFIX + 'nri_pio_initialized', '1');
+        }
+      } else {
+        localStorage.setItem(STORAGE_PREFIX + 'nri_pio_initialized', '1');
       }
     } catch (error) {
       console.warn('Auto-seed check encountered non-blocking error:', error);
@@ -863,5 +917,155 @@ export const contentService = {
       console.warn('Email forwarding error:', err);
       return 'failed';
     }
+  },
+
+  // ==================== NRI / PIO MEMBERS ====================
+  subscribeNriPio(callback: (members: NriPioMember[]) => void): () => void {
+    const isInitialized = localStorage.getItem(STORAGE_PREFIX + 'nri_pio_initialized') === '1';
+    const initialFallback = isInitialized ? [] : INITIAL_NRI_PIO;
+    const cached = getCached<NriPioMember>('nri_pio', initialFallback);
+    callback(cached);
+
+    try {
+      const unsub = onSnapshot(
+        collection(db, 'nriPio'),
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const updatedMap = new Map<string, unknown>();
+            const rawList: NriPioMember[] = snapshot.docs.map((docSnap) => {
+              const data = docSnap.data();
+              updatedMap.set(docSnap.id, data.updatedAt);
+              return {
+                id: docSnap.id,
+                name: data.name || '',
+                photoUrl: data.photoUrl || '',
+                country: data.country || '',
+                awarded: data.awarded || '',
+                designation: data.designation || '',
+                details: data.details || '',
+                createdAt: data.createdAt || ''
+              };
+            });
+            const sorted = sortNewestFirst(rawList, updatedMap);
+            localStorage.setItem(STORAGE_PREFIX + 'nri_pio_initialized', '1');
+            setCached('nri_pio', sorted);
+            callback(sorted);
+          } else {
+            const alreadySeeded = localStorage.getItem(STORAGE_PREFIX + 'nri_pio_initialized') === '1';
+            if (alreadySeeded) {
+              setCached('nri_pio', []);
+              callback([]);
+            } else {
+              callback(sortNewestFirst(INITIAL_NRI_PIO));
+            }
+          }
+        },
+        (error) => {
+          console.warn('NRI/PIO snapshot fallback to cache:', error);
+          callback(getCached<NriPioMember>('nri_pio', INITIAL_NRI_PIO));
+        }
+      );
+      return unsub;
+    } catch (err) {
+      handleFirestoreError(err, OperationType.LIST, 'nriPio');
+      return () => {};
+    }
+  },
+
+  async saveNriPio(item: NriPioMember): Promise<void> {
+    const safeId =
+      (item.id || `nri-pio-${Date.now()}`)
+        .replace(/[^a-zA-Z0-9_-]/g, '')
+        .slice(0, 128) || `nri-pio-${Date.now()}`;
+
+    const cleanItem: NriPioMember = {
+      id: safeId,
+      name: item.name.trim().slice(0, 150),
+      photoUrl: item.photoUrl.trim().slice(0, 800000),
+      country: item.country.trim().slice(0, 120),
+      awarded: item.awarded.trim().slice(0, 200),
+      designation: (item.designation || '').trim().slice(0, 200),
+      details: item.details.trim().slice(0, 10000),
+      createdAt: (item.createdAt || new Date().toISOString()).slice(0, 100)
+    };
+
+    try {
+      await setDoc(doc(db, 'nriPio', safeId), {
+        id: cleanItem.id,
+        name: cleanItem.name,
+        photoUrl: cleanItem.photoUrl,
+        country: cleanItem.country,
+        awarded: cleanItem.awarded,
+        designation: cleanItem.designation || '',
+        details: cleanItem.details,
+        createdAt: cleanItem.createdAt,
+        updatedAt: serverTimestamp()
+      });
+
+      localStorage.setItem(STORAGE_PREFIX + 'nri_pio_initialized', '1');
+      const list = getCached<NriPioMember>('nri_pio', []);
+      const idx = list.findIndex((i) => i.id === safeId);
+      if (idx >= 0) list[idx] = cleanItem;
+      else list.unshift(cleanItem);
+      setCached('nri_pio', sortNewestFirst(list));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `nriPio/${safeId}`);
+    }
+  },
+
+  async deleteNriPio(id: string): Promise<void> {
+    try {
+      await deleteDoc(doc(db, 'nriPio', id));
+      localStorage.setItem(STORAGE_PREFIX + 'nri_pio_initialized', '1');
+      const list = getCached<NriPioMember>('nri_pio', []).filter((i) => i.id !== id);
+      setCached('nri_pio', list);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `nriPio/${id}`);
+    }
+  },
+
+  async encodeNriPioPhotoFile(file: File): Promise<string> {
+    const rawDataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Failed to read image file'));
+      reader.readAsDataURL(file);
+    });
+
+    return new Promise<string>((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const maxDimension = 900;
+        const scale = Math.min(
+          1,
+          maxDimension / Math.max(img.width || 1, img.height || 1)
+        );
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(rawDataUrl.slice(0, 750000));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        let encoded = canvas.toDataURL('image/webp', 0.85);
+        if (encoded.length > 650000) {
+          encoded = canvas.toDataURL('image/jpeg', 0.8);
+        }
+        if (encoded.length > 650000) {
+          const smallerScale = Math.min(1, 600 / Math.max(img.width || 1, img.height || 1));
+          canvas.width = Math.max(1, Math.round(img.width * smallerScale));
+          canvas.height = Math.max(1, Math.round(img.height * smallerScale));
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          encoded = canvas.toDataURL('image/jpeg', 0.76);
+        }
+        resolve(encoded);
+      };
+      img.onerror = () => resolve(rawDataUrl.slice(0, 750000));
+      img.src = rawDataUrl;
+    });
   }
 };
+
